@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mongodb:
+      image: mongo:6-jammy
+      ports:
+        - '27017:27017'
+      volumes:
+        - dbdata6:/data/db
+  backend:
+    build: .
+    ports:
+      - 5001:5001
+      - 9229:9229  # debugger port
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/.pnpm-store
+      - /usr/src/app/node_modules
+    command: pnpm start:docker
+    depends_on:
+      - mongodb
+    environment:
+      PORT: 5001
+      DATABASE_URL: mongodb://mongodb:27017/newdb
+volumes:
+  dbdata6:
+networks:
+  node-network:
+    driver: bridge
